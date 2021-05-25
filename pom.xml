@@ -5,10 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.iraz</groupId>
-  <artifactId>GCSA Practice1</artifactId>
+  <artifactId>GCSAPractice1</artifactId>
   <version>1.0-SNAPSHOT</version>
-
-  <name>GCSA Practice1</name>
+  <name>GCSAPractice1</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
@@ -19,12 +18,45 @@
   </properties>
 
   <dependencies>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>RELEASE</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.13</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>30.1.1-jre</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.snksoft</groupId>
+      <artifactId>crc</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.4.0-b180830.0359</version>
+    </dependency>
+
   </dependencies>
 
   <build>
