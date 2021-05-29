@@ -23,8 +23,6 @@ public class Cryptor {
             synchronized (Cryptor.class){
                 if(instance == null){
                     instance = new Cryptor();
-                    instance.createAESKey();
-                    instance.createInitializationVector();
                 }
             }
         }
