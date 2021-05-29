@@ -2,10 +2,14 @@ package com.iraz;
 
 import lombok.Data;
 
-import javax.crypto.*;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 @Data
 public class Message {
@@ -43,14 +47,14 @@ public class Message {
         return Integer.BYTES*2+message.length;
     }
 
-    public void encode(Cryptor cryptor) throws NoSuchPaddingException, IllegalBlockSizeException,
+    public void encode() throws NoSuchPaddingException, IllegalBlockSizeException,
             NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-        message = cryptor.encrypt(new String(message));
+        message = Cryptor.getInstance().encrypt(new String(message));
     }
 
-    public void decode(Cryptor cryptor) throws NoSuchPaddingException, IllegalBlockSizeException,
+    public void decode() throws NoSuchPaddingException, IllegalBlockSizeException,
             NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-        message =  cryptor.decrypt(message).getBytes(StandardCharsets.UTF_8);
+        message =  Cryptor.getInstance().decrypt(message).getBytes(StandardCharsets.UTF_8);
     }
 
 }

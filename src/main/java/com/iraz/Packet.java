@@ -4,9 +4,13 @@ import com.github.snksoft.crc.CRC;
 import com.google.common.primitives.UnsignedLong;
 import lombok.Data;
 
-import javax.crypto.*;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.nio.ByteBuffer;
-import java.security.*;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 @Data
 public class Packet {
@@ -27,7 +31,7 @@ public class Packet {
     }
 
     //decodes given packet presented in byte[] array
-    public Packet(byte[] encoded, Cryptor cryptor) throws Exception {
+    public Packet(byte[] encoded) throws Exception {
         ByteBuffer buffer = ByteBuffer.wrap(encoded);
         //first part
         Byte expectedMagicByte=buffer.get();
@@ -63,13 +67,13 @@ public class Packet {
         if (!wCrc16_2Calculated.equals(wCrc16_2)) {
             throw new Exception("Unexpected crc16_2");
         }
-        bMsg.decode(cryptor);
+        bMsg.decode();
     }
 
     //encodes packet
-    public byte[] toPacket(Cryptor cryptor) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+    public byte[] toPacket() throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
         Message message=getBMsg();
-        message.encode(cryptor);
+        message.encode();
         wLen=message.getMessage().length;
 
         int firstPartLength=bMagic.BYTES+bSrc.BYTES+Long.BYTES+wLen.BYTES;

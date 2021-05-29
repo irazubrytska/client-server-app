@@ -2,16 +2,33 @@ package com.iraz;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
-import java.security.*;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 public class Cryptor {
 
+    private static Cryptor instance;
     private final byte[] initVector;
     private final SecretKey secretKey;
 
-    public Cryptor() throws NoSuchAlgorithmException {
+    private Cryptor() throws NoSuchAlgorithmException {
         initVector=createInitializationVector();
         secretKey=createAESKey();
+    }
+
+    public static Cryptor getInstance() throws NoSuchAlgorithmException {
+        if(instance == null){
+            synchronized (Cryptor.class){
+                if(instance == null){
+                    instance = new Cryptor();
+                    instance.createAESKey();
+                    instance.createInitializationVector();
+                }
+            }
+        }
+        return instance;
     }
 
     private SecretKey createAESKey() throws NoSuchAlgorithmException {
