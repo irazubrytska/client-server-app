@@ -6,9 +6,9 @@ import java.util.concurrent.BlockingQueue;
 
 public class Receiver implements Runnable{
 
-    private BlockingQueue<Message> input;
-    private BlockingQueue<Message> output;
-    private int stop;
+    private final BlockingQueue<Message> input;
+    private final BlockingQueue<Message> output;
+    private final int stop;
 
     public Receiver(BlockingQueue<Message> input, BlockingQueue<Message> output, int stop){
         this.input=input;
@@ -18,10 +18,10 @@ public class Receiver implements Runnable{
 
     @Override
     public void run() {
-        receiveMessage();
+        receive();
     }
 
-    private void receiveMessage(){
+    private void receive(){
         try{
             while (true) {
                 Message message=input.take();
