@@ -11,12 +11,11 @@ public class Decryptor implements Runnable{
 
     private final BlockingQueue<Message> input;
     private final BlockingQueue<Message> output;
-    private final int stop;
+    private static final int STOP=0;
 
-    public Decryptor(BlockingQueue<Message> input, BlockingQueue<Message> output, int stop){
+    public Decryptor(BlockingQueue<Message> input, BlockingQueue<Message> output){
         this.input=input;
         this.output=output;
-        this.stop=stop;
     }
 
     @Override
@@ -28,7 +27,7 @@ public class Decryptor implements Runnable{
         try{
             while (true) {
                 Message message=input.take();
-                if(message.getMessage().length==stop){
+                if(message.getMessage().length==STOP){
                     output.put(message);
                     System.err.println(Decryptor.class+" got stop length message");
                     break;

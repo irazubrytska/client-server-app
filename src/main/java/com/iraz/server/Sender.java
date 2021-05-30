@@ -2,25 +2,20 @@ package com.iraz.server;
 
 import com.iraz.Packet;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
 import java.net.InetAddress;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.util.concurrent.BlockingQueue;
 
 public class Sender implements Runnable{
 
-    private BlockingQueue<Packet> input;
-    private InetAddress address;
-    private int stop;
+    private final BlockingQueue<Packet> input;
+    private final InetAddress address;
+    private static final int STOP=0;
 
-    public Sender(BlockingQueue<Packet> input, InetAddress address, int stop){
+    public Sender(BlockingQueue<Packet> input, InetAddress address){
         this.input = input;
         this.address = address;
-        this.stop=stop;
     }
 
     @Override
@@ -31,7 +26,7 @@ public class Sender implements Runnable{
     private void send(){
         try {
             Packet pack=input.take();
-            if(pack.getBMsg().getMessage().length==stop){
+            if(pack.getBMsg().getMessage().length==STOP){
                 return;
             }
             sendMessage(pack.toPacket());

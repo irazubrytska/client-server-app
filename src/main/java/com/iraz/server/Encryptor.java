@@ -13,12 +13,11 @@ public class Encryptor implements Runnable{
 
     private final BlockingQueue<Message> input;
     private final BlockingQueue<Packet> output;
-    private final int stop;
+    private static final int STOP=0;
 
-    public Encryptor(BlockingQueue<Message> input, BlockingQueue<Packet> output, int stop){
+    public Encryptor(BlockingQueue<Message> input, BlockingQueue<Packet> output){
         this.input=input;
         this.output=output;
-        this.stop=stop;
     }
 
     @Override
@@ -30,7 +29,7 @@ public class Encryptor implements Runnable{
         try{
             while (true) {
                 Message message=input.take();
-                if(message.getMessage().length==stop){
+                if(message.getMessage().length==STOP){
                     output.put(new Packet((byte)0,UnsignedLong.ZERO, message));
                     System.err.println(Encryptor.class+" got stop length message");
                     break;
