@@ -71,7 +71,7 @@ public class Packet {
     }
 
     //encodes packet
-    public byte[] toPacket() throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+    public byte[] toPacket(){
         Message message=getBMsg();
         message.encode();
         wLen=message.getMessage().length;

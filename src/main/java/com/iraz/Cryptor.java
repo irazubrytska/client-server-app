@@ -43,19 +43,29 @@ public class Cryptor {
         return initializationVector;
     }
 
-    public byte[] encrypt(final String message) throws NoSuchPaddingException, NoSuchAlgorithmException,
-            InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(initVector);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey,ivParameterSpec);
+    public byte[] encrypt(final String message) throws IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(initVector);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
+        } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        assert cipher != null;
         return cipher.doFinal(message.getBytes());
     }
 
-    public String decrypt(final byte[] message) throws NoSuchPaddingException, NoSuchAlgorithmException,
-            InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(initVector);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey,ivParameterSpec);
+    public String decrypt(final byte[] message) throws IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(initVector);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+        } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        assert cipher != null;
         return new String(cipher.doFinal(message));
     }
 

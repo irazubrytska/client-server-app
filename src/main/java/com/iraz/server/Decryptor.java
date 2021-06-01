@@ -1,19 +1,16 @@
 package com.iraz.server;
 
-import com.iraz.Message;
+import com.iraz.Packet;
 
-import java.security.*;
 import java.util.concurrent.BlockingQueue;
-
-import javax.crypto.*;
 
 public class Decryptor implements Runnable{
 
-    private final BlockingQueue<Message> input;
-    private final BlockingQueue<Message> output;
+    private final BlockingQueue<byte[]> input;
+    private final BlockingQueue<Packet> output;
     private static final int STOP=0;
 
-    public Decryptor(BlockingQueue<Message> input, BlockingQueue<Message> output){
+    public Decryptor(BlockingQueue<byte[]> input, BlockingQueue<Packet> output){
         this.input=input;
         this.output=output;
     }
@@ -26,23 +23,21 @@ public class Decryptor implements Runnable{
     private void decrypt(){
         try{
             while (true) {
-                Message message=input.take();
-                if(message.getMessage().length==STOP){
-                    output.put(message);
+                byte[] message=input.take();
+                if(new Packet(message).getBMsg().getMessage().length==STOP){
+                    output.put(new Packet(message));
                     System.err.println(Decryptor.class+" got stop length message");
                     break;
                 }
-                message.decode();
-                output.put(message);
+                output.put(new Packet(message)); //decoding
+                System.out.println("decryptor "+Thread.currentThread().getId()+" got "+new String(new Packet(message).getBMsg().getMessage()));
             }
-        }
-        catch(InterruptedException | InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException
-                | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public BlockingQueue<Message> getOutput(){
+    public BlockingQueue<Packet> getOutput(){
         return output;
     }
 

@@ -1,12 +1,14 @@
 package com.iraz;
 
 import  com.google.common.primitives.UnsignedLong;
-import org.checkerframework.checker.units.qual.C;
+import com.iraz.server.*;
 import org.junit.Assert;
 import org.junit.Test;
 
 import javax.crypto.*;
+import java.net.InetAddress;
 import java.security.*;
+import java.util.Iterator;
 
 public class AppTest {
 
@@ -22,7 +24,7 @@ public class AppTest {
     }
 
     @Test
-    public void encryptDecryptTest() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public void encryptDecryptTest() throws NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException{
         String original = "This is the message I want To Encrypt.";
         byte[] encrypted = Cryptor.getInstance().encrypt(original);
         String decrypted = Cryptor.getInstance().decrypt(encrypted);
@@ -58,6 +60,92 @@ public class AppTest {
         Assert.assertEquals(pack1.getBMsg().getBUserId(), pack2.getBMsg().getBUserId());
         Assert.assertArrayEquals(pack1.getBMsg().getMessage(), pack2.getBMsg().getMessage());
         Assert.assertEquals(test_message, new String(pack2.getBMsg().getMessage()));
+    }
+
+    @Test
+    public void serverTest() throws Exception {
+        Server server=new Server(8,20);
+        String message="some message";
+        String reply="Ok";
+        server.createEqualMessages(message);
+        int nMessages=server.getInitialMessages().size();
+        Thread[] threads = new Thread[server.getNUM_THREADS()];
+
+        //______________________________receivers_____________________
+        for(int i=0; i<threads.length; i++){
+            threads[i]=new Thread(new Receiver(server.getInitialMessages(), server.getReceiverOutput()));
+            threads[i].start();
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Assert.assertEquals(nMessages,server.getReceiverOutput().size()); //input.size==output.size
+
+        //______________________________decryptors_____________________
+        for(int i=0; i<threads.length; i++){
+            threads[i]=new Thread(new Decryptor(server.getReceiverOutput(), server.getDecryptorOutput()));
+            threads[i].start();
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Assert.assertEquals(nMessages,server.getDecryptorOutput().size()); //input.size==output.size
+        for (Packet p : server.getDecryptorOutput()) {
+            if (!new String(p.getBMsg().getMessage()).equals("")) //if not stop message
+                Assert.assertEquals(new String(p.getBMsg().getMessage()), message); //check if decryption is working
+        }
+
+        //______________________________processors_____________________
+        for(int i=0; i<threads.length; i++){
+            threads[i]=new Thread(new Processor(server.getDecryptorOutput(), server.getProcessorOutput()));
+            threads[i].start();
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Assert.assertEquals(nMessages,server.getProcessorOutput().size()); //input.size==output.size
+        for (Packet p : server.getProcessorOutput()) {
+            if (!new String(p.getBMsg().getMessage()).equals("")) {//if not stop message
+                Assert.assertEquals(new String(p.getBMsg().getMessage()), reply); //check if processor is working
+            }
+        }
+
+        //______________________________encryptors_____________________
+        for(int i=0; i<threads.length; i++){
+            threads[i]=new Thread(new Encryptor(server.getProcessorOutput(), server.getEncryptorOutput()));
+            threads[i].start();
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Assert.assertEquals(nMessages,server.getEncryptorOutput().size()); //input.size=output.size
+//        System.out.println(Arrays.toString(message.getBytes(StandardCharsets.UTF_8)));
+//        System.out.println(Arrays.toString(new Packet(server.getEncryptorOutput().take()).getBMsg().getMessage()));
+        for (byte[] b : server.getEncryptorOutput()) {
+            if (!new String(new Packet(b).getBMsg().getMessage()).equals("")) {//if not stop message
+                Assert.assertEquals(new String(new Packet(b).getBMsg().getMessage()), reply); //check if encryption is working
+            }
+        }
+
+        //______________________________senders_____________________
+        for(int i=0; i<threads.length; i++){
+            threads[i]=new Thread(new Sender(server.getEncryptorOutput(), InetAddress.getLocalHost()));
+            threads[i].start();
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 }

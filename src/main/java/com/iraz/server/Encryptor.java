@@ -1,21 +1,16 @@
 package com.iraz.server;
 
-import com.iraz.Message;
 import com.iraz.Packet;
 
-import java.security.*;
 import java.util.concurrent.BlockingQueue;
-import com.google.common.primitives.UnsignedLong;
-
-import javax.crypto.*;
 
 public class Encryptor implements Runnable{
 
-    private final BlockingQueue<Message> input;
-    private final BlockingQueue<Packet> output;
+    private final BlockingQueue<Packet> input;
+    private final BlockingQueue<byte[]> output;
     private static final int STOP=0;
 
-    public Encryptor(BlockingQueue<Message> input, BlockingQueue<Packet> output){
+    public Encryptor(BlockingQueue<Packet> input, BlockingQueue<byte[]> output){
         this.input=input;
         this.output=output;
     }
@@ -28,18 +23,16 @@ public class Encryptor implements Runnable{
     private void encrypt(){
         try{
             while (true) {
-                Message message=input.take();
-                if(message.getMessage().length==STOP){
-                    output.put(new Packet((byte)0,UnsignedLong.ZERO, message));
+                Packet message=input.take();
+                if(message.getBMsg().getMessage().length==STOP){
+                    output.put(message.toPacket());
                     System.err.println(Encryptor.class+" got stop length message");
                     break;
                 }
-                message.encode();
-                output.put(new Packet((byte)1, UnsignedLong.ONE, message));
+                System.out.println("encryptor "+Thread.currentThread().getId()+" got "+new String(message.getBMsg().getMessage()));
+                output.put(message.toPacket()); //encoding
             }
-        }
-        catch(InterruptedException | InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException
-                | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

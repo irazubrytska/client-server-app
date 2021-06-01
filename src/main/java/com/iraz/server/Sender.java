@@ -2,18 +2,16 @@ package com.iraz.server;
 
 import com.iraz.Packet;
 
-import javax.crypto.*;
 import java.net.InetAddress;
-import java.security.*;
 import java.util.concurrent.BlockingQueue;
 
 public class Sender implements Runnable{
 
-    private final BlockingQueue<Packet> input;
+    private final BlockingQueue<byte[]> input;
     private final InetAddress address;
     private static final int STOP=0;
 
-    public Sender(BlockingQueue<Packet> input, InetAddress address){
+    public Sender(BlockingQueue<byte[]> input, InetAddress address){
         this.input = input;
         this.address = address;
     }
@@ -24,20 +22,23 @@ public class Sender implements Runnable{
     }
 
     private void send(){
-        try {
-            Packet pack=input.take();
-            if(pack.getBMsg().getMessage().length==STOP){
-                return;
+            while(true){
+                byte[] pack;
+                try {
+                    pack = input.take();
+                if((new Packet(pack)).getBMsg().getMessage().length==STOP){
+                    System.err.println(Sender.class+" got stop length message");
+                    break;
+                }
+                sendMessage(pack);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            sendMessage(pack.toPacket());
-        } catch(InterruptedException | InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException
-                | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e){
-            e.printStackTrace();
-        }
     }
 
-    private void sendMessage(byte[] message){
-        System.out.println("Sent message");
+    private void sendMessage(byte[] message) throws Exception {
+        System.out.println("sender sent message "+new String(new Packet(message).getBMsg().getMessage()));
     }
 
 }

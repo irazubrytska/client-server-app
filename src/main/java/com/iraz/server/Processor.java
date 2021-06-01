@@ -1,17 +1,18 @@
 package com.iraz.server;
 
 import com.iraz.Message;
+import com.iraz.Packet;
 
 import java.util.concurrent.BlockingQueue;
 
 public class Processor implements Runnable{
 
-    private final BlockingQueue<Message> input;
-    private final BlockingQueue<Message> output;
+    private final BlockingQueue<Packet> input;
+    private final BlockingQueue<Packet> output;
     private static final int STOP=0;
     private final static String REPLY="Ok";
 
-    public Processor(BlockingQueue<Message> input, BlockingQueue<Message> output){
+    public Processor(BlockingQueue<Packet> input, BlockingQueue<Packet> output){
         this.input=input;
         this.output=output;
     }
@@ -24,14 +25,15 @@ public class Processor implements Runnable{
     private void process(){
         try{
             while (true) {
-                Message message=input.take();
-                if(message.getMessage().length==STOP){
-                    output.put(message);
+                Packet pack=input.take();
+                if(pack.getBMsg().getMessage().length==STOP){
+                    output.put(pack);
                     System.err.println(Processor.class+" got stop length message");
                     break;
                 }
-                Message reply=new Message(message.getCType(),message.getBUserId(),REPLY);
-                output.put(reply);
+                //output.put(pack);
+                output.put(new Packet(pack.getBSrc(),pack.getBPktId(),new Message(pack.getBMsg().getCType(),pack.getBMsg().getBUserId(),REPLY)));
+                System.out.println("processor "+Thread.currentThread().getId()+" got "+new String(pack.getBMsg().getMessage())+" "+REPLY);
             }
         }
         catch(InterruptedException e){

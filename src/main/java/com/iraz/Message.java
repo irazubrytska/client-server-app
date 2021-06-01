@@ -4,11 +4,8 @@ import lombok.Data;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 @Data
@@ -16,6 +13,7 @@ public class Message {
     private int cType;
     private int bUserId; //id of whom sent the message
     private byte[] message; //message itself
+    private static final int INT_BYTES = Integer.BYTES*2;
 
     public Message(int cType, int bUserId, String message){
         this.cType=cType;
@@ -44,17 +42,23 @@ public class Message {
 
     //returns num of bytes of whole message
     public int getAllBytes(){
-        return Integer.BYTES*2+message.length;
+        return INT_BYTES +message.length;
     }
 
-    public void encode() throws NoSuchPaddingException, IllegalBlockSizeException,
-            NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-        message = Cryptor.getInstance().encrypt(new String(message));
+    public void encode(){
+        try {
+            message = Cryptor.getInstance().encrypt(new String(message));
+        } catch (IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void decode() throws NoSuchPaddingException, IllegalBlockSizeException,
-            NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-        message =  Cryptor.getInstance().decrypt(message).getBytes(StandardCharsets.UTF_8);
+    public void decode(){
+        try {
+            message =  Cryptor.getInstance().decrypt(message).getBytes(StandardCharsets.UTF_8);
+        } catch (IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException e) {
+            e.printStackTrace();
+        }
     }
 
 }
