@@ -8,7 +8,6 @@ import org.junit.Test;
 import javax.crypto.*;
 import java.net.InetAddress;
 import java.security.*;
-import java.util.Iterator;
 
 public class AppTest {
 

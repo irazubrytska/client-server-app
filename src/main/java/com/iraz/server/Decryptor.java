@@ -37,8 +37,4 @@ public class Decryptor implements Runnable{
         }
     }
 
-    public BlockingQueue<Packet> getOutput(){
-        return output;
-    }
-
 }

@@ -31,9 +31,8 @@ public class Processor implements Runnable{
                     System.err.println(Processor.class+" got stop length message");
                     break;
                 }
-                //output.put(pack);
                 output.put(new Packet(pack.getBSrc(),pack.getBPktId(),new Message(pack.getBMsg().getCType(),pack.getBMsg().getBUserId(),REPLY)));
-                System.out.println("processor "+Thread.currentThread().getId()+" got "+new String(pack.getBMsg().getMessage())+" "+REPLY);
+                System.out.println("processor "+Thread.currentThread().getId()+" got "+new String(pack.getBMsg().getMessage())+", reply - "+REPLY);
             }
         }
         catch(InterruptedException e){

@@ -46,8 +46,4 @@ public class Receiver implements Runnable, ReceiverInterface{
         }
     }
 
-    public BlockingQueue<byte[]> getOutput(){
-        return output;
-    }
-
 }
