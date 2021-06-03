@@ -2,6 +2,7 @@ package com.iraz.server;
 
 import com.iraz.Message;
 import com.iraz.Packet;
+import com.iraz.store.TransportProtocol;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -38,6 +39,10 @@ public class Processor implements Runnable{
         catch(InterruptedException e){
             e.printStackTrace();
         }
+    }
+
+    public static void process(TransportProtocol protocol, Packet packet){
+
     }
 
 }

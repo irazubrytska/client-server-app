@@ -145,6 +145,12 @@ public class AppTest {
             }
         }
 
+        //check that all packets have been processed
+        Assert.assertEquals(server.getInitialMessages().size(),0);
+        Assert.assertEquals(server.getReceiverOutput().size(),0);
+        Assert.assertEquals(server.getDecryptorOutput().size(),0);
+        Assert.assertEquals(server.getProcessorOutput().size(),0);
+        Assert.assertEquals(server.getEncryptorOutput().size(),0);
     }
 
 }

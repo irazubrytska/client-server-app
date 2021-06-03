@@ -10,10 +10,11 @@ import java.security.NoSuchAlgorithmException;
 
 @Data
 public class Message {
-    private int cType;
-    private int bUserId; //id of whom sent the message
+    private Integer cType;
+    private Integer bUserId; //id of whom sent the message
     private byte[] message; //message itself
     private static final int INT_BYTES = Integer.BYTES*2;
+    public static final int BYTES_MAX_SIZE = INT_BYTES+255; //max length of byte[] is Integer.MAX_VALUE
 
     public Message(int cType, int bUserId, String message){
         this.cType=cType;

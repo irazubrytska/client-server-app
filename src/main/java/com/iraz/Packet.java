@@ -4,10 +4,12 @@ import com.github.snksoft.crc.CRC;
 import com.google.common.primitives.UnsignedLong;
 import lombok.Data;
 
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 @Data
 public class Packet {
+
     public final static Byte bMagic=0x13; //byte that points to start of packet
     private Byte bSrc;                   //unique customer application number
     private UnsignedLong bPktId;        //packet id
@@ -15,6 +17,14 @@ public class Packet {
     private Short wCrc16_1;           //00-13
     private Message bMsg;            //message
     private Short wCrc16_2;         //16-16+wLen
+
+    private Integer port;
+    private InetAddress address;
+
+    public final static Integer BMAGIC_BSRC_PKTID_BYTES=bMagic.BYTES+Byte.BYTES+Long.BYTES;
+    public final static Integer N0_CRC1_FIRST_PART_BYTES=BMAGIC_BSRC_PKTID_BYTES+Integer.BYTES;
+    public final static Integer CRC1_FIRST_PART_BYTES=N0_CRC1_FIRST_PART_BYTES+Short.BYTES;
+    public final static Integer MAX_PACKET_SIZE=CRC1_FIRST_PART_BYTES+Message.BYTES_MAX_SIZE+Short.BYTES;
 
     //creates new packet
     public Packet(Byte bSrc, UnsignedLong bPktId, Message bMsg){
